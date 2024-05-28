@@ -1,0 +1,12 @@
+payload:
+  - 'DOMAIN,82.165.212.213'
+  - 'DOMAIN,hw-v2-web-player-tracker.biliapi.net'
+  - 'DOMAIN,stun.qq.com'
+  - 'DOMAIN,stun.miwifi.com'
+  - 'DOMAIN,stun.cloudflare.com'
+  - 'DOMAIN,stun.nextcloud.com'
+  - 'DOMAIN,stun.smartgslb.com'
+  - 'DOMAIN-REGEX,stun*.l.google.com'
+  - 'DOMAIN-SUFFIX,stun.twilio.com'
+  - 'DOMAIN-KEYWORD,stun'
+  - 'DST-PORT,3478'

@@ -1,0 +1,266 @@
+port: 7890
+# socks-port: 7891
+# mixed-port: 7890
+redir-port: 9797
+tproxy-port: 9898
+mode: rule
+unified-delay: true
+
+allow-lan: false
+bind-address: '*'
+
+# silent | error | warning | info | debug
+log-level: info
+ipv6: true
+
+external-controller: 0.0.0.0:9090 
+secret: "clash"
+external-ui: /data/adb/box/clash/dashboard
+tcp-concurrent: true
+
+geodata-mode: false
+# standard | memconservative
+geodata-loader: standard
+geox-url:
+  mmdb: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+  geosite: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+geo-auto-update: true
+geo-update-interval: 24
+
+# 控制是否让 Clash 去匹配进程
+# always 开启，强制匹配所有进程
+# strict 默认，由 Clash 判断是否开启
+# off 不匹配进程，推荐在路由器上使用此模式
+# find-process-mode: always
+
+profile:
+  store-selected: true
+  # 储存 API 对策略组的选择，以供下次启动时使用
+  store-fake-ip: false
+  # 储存 fakeip 映射表，域名再次发生连接时，使用原有映射地址
+
+tun:
+  enable: false
+  device: utun
+  mtu: 9000
+  stack: system # gvisor / lwip / system
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  auto-route: true
+  auto-detect-interface: true
+
+dns:
+  enable: true
+  ipv6: true
+  prefer-h3: true
+  default-nameserver:
+    - 8.8.8.8
+    - 1.1.1.1
+  listen: 0.0.0.0:1053
+  use-hosts: true
+  enhanced-mode: redir-host
+  nameserver:
+    - 8.8.8.8
+    - 1.0.0.1
+
+# hosts:
+  # host: ip
+
+p-proxies: &proxies
+  - '🚀 节点选择'
+  - '♻️ 自动选择(all)'
+  - '♻️ 自动选择(一元)'
+  - '♻️ 自动选择(赔钱)'
+  - DIRECT
+  - REJECT
+
+proxy-groups:
+  - name: '🚀 节点选择'
+    type: select
+    proxies:
+      - '♻️ 自动选择(all)'
+      - '♻️ 自动选择(一元)'
+      - '♻️ 自动选择(赔钱)'
+      - DIRECT
+      - REJECT
+    include-all-providers: true
+
+  - name: '♻️ 自动选择(all)'
+    type: url-test
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 3600
+    include-all-providers: true
+
+  - name: '♻️ 自动选择(1)'
+    type: url-test
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 3600
+    use:
+      - '机场1'
+
+  - name: '♻️ 自动选择(2)'
+    type: url-test
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 3600
+    use:
+      - '机场2'
+
+  - name: '🌍 国外媒体'
+    type: select
+    proxies: *proxies
+    include-all-providers: true
+
+  - name: '📲 电报信息'
+    type: select
+    proxies: *proxies
+    include-all-providers: true
+
+  - name: '🍎 苹果服务'
+    type: select
+    proxies: *proxies
+    include-all-providers: true
+
+  - name: '🐟 漏网之鱼'
+    type: select
+    proxies: *proxies
+    include-all-providers: true
+
+  - name: '🎯 全球直连'
+    type: select
+    proxies:
+      - DIRECT
+      - '🚀 节点选择'
+      - '♻️ 自动选择(all)'
+      - REJECT
+    include-all-providers: true
+
+  - name: '🍃 应用净化'
+    type: select
+    proxies:
+      - REJECT
+      - '🚀 节点选择'
+      - '♻️ 自动选择(all)'
+      - DIRECT
+    include-all-providers: true
+
+p-url: &url
+    type: http
+    interval: 86400
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 3600
+
+proxy-providers:
+  "机场1":
+    <<: *url
+    path: ./provide/proxy/Frist.yaml
+    url: URL
+
+  "机场2":
+    <<: *url
+    path: ./provide/proxy/Second.yaml
+    url: URL
+
+p-rule: &rule
+  type: http
+  interval: 86400
+
+rule-providers:
+  reject:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    path: ./provide/rule/reject.yaml
+
+  icloud:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt"
+    path: ./provide/rule/icloud.yaml
+
+  apple:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt"
+    path: ./provide/rule/apple.yaml
+
+  google:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt"
+    path: ./provide/rule/google.yaml
+
+  proxy:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+    path: ./provide/rule/proxy.yaml
+
+  direct:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+    path: ./provide/rule/direct.yaml
+
+  private:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"
+    path: ./provide/rule/private.yaml
+
+  gfw:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+    path: ./provide/rule/gfw.yaml
+
+  tld-not-cn:
+    <<: *rule
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt"
+    path: ./provide/rule/tld-not-cn.yaml
+
+  telegramcidr:
+    <<: *rule
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt"
+    path: ./provide/rule/telegramcidr.yaml
+
+  cncidr:
+    <<: *rule
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+    path: ./provide/rule/cncidr.yaml
+
+  lancidr:
+    <<: *rule
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+    path: ./provide/rule/lancidr.yaml
+
+  stun:
+    <<: *rule
+    behavior: classical
+    type: file
+    path: ./provide/rule/stun.yaml
+
+rules:
+  - RULE-SET,private,DIRECT,no-resolve
+  - RULE-SET,lancidr,DIRECT
+  - GEOIP,LAN,DIRECT
+  - 'RULE-SET,reject,🍃 应用净化'
+  - 'GEOSITE,category-ads-all,🍃 应用净化'
+  - 'RULE-SET,icloud,🍎 苹果服务'
+  - 'RULE-SET,apple,🍎 苹果服务'
+  - 'RULE-SET,telegramcidr,📲 电报信息'
+  - 'GEOIP,telegram,📲 电报信息'
+  - 'GEOSITE,telegram,📲 电报信息'
+  - 'RULE-SET,stun,🚀 节点选择'
+  - 'RULE-SET,google,🚀 节点选择'
+  - 'RULE-SET,proxy,🚀 节点选择'
+  - 'RULE-SET,direct,🎯 全球直连,no-resolve'
+  - 'RULE-SET,cncidr,🎯 全球直连'
+  - 'GEOIP,CN,🎯 全球直连'
+  - 'MATCH,🐟 漏网之鱼'
