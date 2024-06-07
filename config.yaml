@@ -70,8 +70,8 @@ dns:
 p-proxies: &proxies
   - '🚀 节点选择'
   - '♻️ 自动选择(all)'
-  - '♻️ 自动选择(一元)'
-  - '♻️ 自动选择(赔钱)'
+  - '♻️ 自动选择(1)'
+  - '♻️ 自动选择(2)'
   - DIRECT
   - REJECT
 
@@ -80,8 +80,8 @@ proxy-groups:
     type: select
     proxies:
       - '♻️ 自动选择(all)'
-      - '♻️ 自动选择(一元)'
-      - '♻️ 自动选择(赔钱)'
+      - '♻️ 自动选择(1)'
+      - '♻️ 自动选择(2)'
       - DIRECT
       - REJECT
     include-all-providers: true
@@ -243,7 +243,7 @@ rule-providers:
   stun:
     <<: *rule
     behavior: classical
-    type: file
+    url: "https://cdn.jsdelivr.net/gh/HDTianRu/clashConfig/provide/rule/stun.yaml"
     path: ./provide/rule/stun.yaml
 
 rules:
