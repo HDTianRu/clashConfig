@@ -155,11 +155,15 @@ p-url: &url
 proxy-providers:
   "机场1":
     <<: *url
+    override:
+      additional-prefix: "[机场名称1]"
     path: ./provide/proxy/Frist.yaml
     url: URL
 
   "机场2":
     <<: *url
+    override:
+      additional-prefix: "[机场名称2] "
     path: ./provide/proxy/Second.yaml
     url: URL
 
@@ -257,7 +261,7 @@ rules:
   - 'RULE-SET,telegramcidr,📲 电报信息'
   - 'GEOSITE,pixiv,🌍 国外媒体'
   - 'GEOSITE,netflix,🌍 国外媒体'
-  - 'GEOSITE,spotif,🌍 国外媒体'
+  - 'GEOSITE,spotify,🌍 国外媒体'
   - 'GEOSITE,youtube,🌍 国外媒体'
   - 'GEOSITE,ehentai,🌍 国外媒体'
   - 'GEOSITE,tiktok,🌍 国外媒体'
